@@ -4,7 +4,7 @@
 
 <br />
 <div align="center">
-  <a href="https://v-mokhun.com">
+  <a href="https://v1.v-mokhun.com">
 		<img src="readme-images/logo.png" alt="Logo" width="400" height="100">
   </a>
 

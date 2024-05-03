@@ -1,0 +1,74 @@
+---
+import { POSTS_PER_PAGE } from "@/consts";
+import Layout from "@/layouts/layout.astro";
+import PostCard from "@/ui/astro/widgets/post-card.astro";
+import { Container, Pagination, buttonVariants } from "@/ui/react";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+
+const currentPage = +Astro.url.searchParams.get("page")! || 1;
+
+const allBlogPosts: CollectionEntry<"blog">[] = (
+  await getCollection("blog")
+).sort(
+  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+    b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const totalPages = Math.ceil(allBlogPosts.length / POSTS_PER_PAGE);
+
+const postsForPage = allBlogPosts.slice(
+  (currentPage - 1) * POSTS_PER_PAGE,
+  currentPage * POSTS_PER_PAGE
+);
+---
+
+<Layout title="Volodymyr Mokhun - Blog">
+  <section class="h-full pb-10 md:pb-12 -mt-6 lg:mt-0">
+    <div class="bg-background-secondary py-10 md:pt-12 md:pb-48 lg:pb-72">
+      <Container className="mb-20">
+        <h1
+          class="text-6xl md:text-7xl leading-none font-semibold mb-4 md:mb-3 text-white dark:text-foreground"
+        >
+          Blog
+        </h1>
+        <h2
+          class="text-xl xs:text-2xl md:text-3xl leading-tight font-medium text-zinc-300 dark:text-zinc-400 max-w-xl"
+        >
+          Just describing some of my thoughts, sharing things I find
+          interesting, and documenting my journey as a developer
+        </h2>
+      </Container>
+    </div>
+    <Container>
+      {
+        postsForPage.length > 0 ? (
+          <>
+            <div class="grid grid-cols-1 gap-6 md:gap-x-4 md:grid-cols-2 -mt-12 md:-mt-48 lg:-mt-72 mb-10">
+              {postsForPage.map((post) => (
+                <PostCard post={post} />
+              ))}
+            </div>
+            <Pagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              disableNext={currentPage === totalPages}
+              disablePrevious={currentPage === 1}
+            />
+          </>
+        ) : (
+          <div class="space-y-4 py-6">
+            <h3 class="text-xl xs:text-2xl md:text-3xl font-medium">
+              <span class="font-bold text-primary">Oops!</span> Seems like you
+              reached the end of the blog posts, or maybe you are looking for
+              something that doesn't exist.
+            </h3>
+            <a class={buttonVariants()} href="/blog">
+              See Blog Posts
+            </a>
+          </div>
+        )
+      }
+    </Container>
+  </section></Layout
+>
